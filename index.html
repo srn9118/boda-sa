@@ -644,44 +644,114 @@ html.preview::-webkit-scrollbar{display:none}
    CONFIG — todo lo editable. El panel (editor.html) escribe aquí.
    ============================================================ */
 /*CONFIG_START*/let CONFIG = {
-  initials: "S&A",
-  fonts: { script: "Pinyon Script", serif: "Cormorant Garamond" },
-  heroImage: "media/portada.jpg",
-  introImage: "media/sobre-cerrado.jpg",   // foto del sobre cerrado (primer fotograma del vídeo)
-  introVideo: "media/apertura-sobre.mp4",   // vídeo de apertura del sobre (9:16); si existe, sustituye a la animación dibujada
-  sections: { invite:true, countdown:true, venues:true, schedule:true, dress:true, gifts:true, faq:true, rsvp:true },
-  name1: "Sergi",
-  name2: "Ainoa",
-  heroLede: "Nos casamos",
-  date: "2027-09-11T18:00:00",
-  dateLong: "11 · septiembre · 2027",
-  inviteText: "a celebrar con nosotros el día más especial de nuestras vidas. Será un día inolvidable, y no sería lo mismo sin ti.",
-  heroVideo: "media/portada.mp4",   // URL de un .mp4 (p. ej. generado en Higgsfield) para la portada
-  music: "",       // URL de un .mp3; si está vacío no se muestra el botón
-  venues: [
-    { label:"Ceremonia", time:"18:00", name:"Iglesia de Santa María", address:"Plaza Mayor 1, Ciudad", maps:"https://maps.google.com/?q=Plaza+Mayor+1" },
-    { label:"Celebración", time:"20:00", name:"Finca Los Olivos", address:"Camino del Olivar s/n, Ciudad", maps:"https://maps.google.com/?q=Finca+Los+Olivos" }
+  "initials": "S&A",
+  "fonts": {
+    "script": "Pinyon Script",
+    "serif": "Cormorant Garamond"
+  },
+  "heroImage": "media/portada.jpg",
+  "introImage": "media/sobre-cerrado.jpg",
+  "introVideo": "media/apertura-sobre.mp4",
+  "sections": {
+    "invite": true,
+    "countdown": true,
+    "venues": true,
+    "schedule": true,
+    "dress": true,
+    "gifts": true,
+    "faq": true,
+    "rsvp": true
+  },
+  "name1": "Sergi",
+  "name2": "Ainoa",
+  "heroLede": "Nos casamos",
+  "date": "2029-09-23T18:00:00",
+  "dateLong": "23 · septiembre · 2029",
+  "inviteText": "a celebrar con nosotros el día más especial de nuestras vidas. Será un día inolvidable, y no sería lo mismo sin ti.",
+  "heroVideo": "media/portada.mp4",
+  "music": "media/musica.mp3",
+  "venues": [
+    {
+      "label": "Ceremonia",
+      "time": "18:00",
+      "name": "Mas de Sant Lleí",
+      "address": "Cami de Casa Alta s/n. Ctra. Granollers a Masnou km 10,5. 08410 Vilanova del Vallès, Barcelona",
+      "maps": "https://maps.app.goo.gl/6umXYBZ1HsT38twv7"
+    },
+    {
+      "label": "Celebración",
+      "time": "20:00",
+      "name": "Finca Los Olivos",
+      "address": "Camino del Olivar s/n, Ciudad",
+      "maps": "https://maps.google.com/?q=Finca+Los+Olivos"
+    }
   ],
-  schedule: [
-    { hour:"18:00", title:"Ceremonia", text:"Os esperamos puntuales" },
-    { hour:"19:30", title:"Cóctel", text:"En los jardines de la finca" },
-    { hour:"21:00", title:"Cena", text:"Banquete bajo las estrellas" },
-    { hour:"23:30", title:"Fiesta", text:"¡A bailar hasta el amanecer!" }
+  "schedule": [
+    {
+      "hour": "18:00",
+      "title": "Ceremonia",
+      "text": "Os esperamos puntuales"
+    },
+    {
+      "hour": "19:30",
+      "title": "Cóctel",
+      "text": "En los jardines de la finca"
+    },
+    {
+      "hour": "21:00",
+      "title": "Cena",
+      "text": "Banquete bajo las estrellas"
+    },
+    {
+      "hour": "23:30",
+      "title": "Fiesta",
+      "text": "¡A bailar hasta el amanecer!"
+    }
   ],
-  dressStyle: "Formal de verano",
-  dressWomen: "Vestido largo o cóctel",
-  dressMen: "Traje y corbata",
-  swatches: ["#c9a7a0","#e8dccb","#9aab8c","#b9b4cf","#d8b88a"],
-  giftText: "Vuestra presencia es nuestro mejor regalo. Si además queréis tener un detalle con nosotros, os dejamos nuestra cuenta:",
-  iban: "ES00 0000 0000 0000 0000 0000",
-  rsvpBy: "1 de julio de 2027",
-  rsvpEndpoint: "",   // URL /exec de la Apps Script de Google (ver rsvp-apps-script.gs)
-  faq: [
-    { q:"¿Puedo llevar acompañante?", a:"Sí, indícalo en el formulario de confirmación." },
-    { q:"¿Pueden venir niños?", a:"Los peques son bienvenidos. Dinos cuántos vienen para prepararles su menú." },
-    { q:"¿Habrá autobús?", a:"Sí, saldrá desde el centro de la ciudad a las 17:15 y habrá vuelta al final de la fiesta." }
+  "dressStyle": "Formal de verano",
+  "dressWomen": "Vestido largo o cóctel",
+  "dressMen": "Traje y corbata",
+  "swatches": [
+    "#c9a7a0",
+    "#e8dccb",
+    "#9aab8c",
+    "#b9b4cf",
+    "#d8b88a"
   ],
-  theme: {} // p. ej. { "--seal":"#7d8f6e", "--paper":"#f2ece2" }
+  "giftText": "Vuestra presencia es nuestro mejor regalo. Si además queréis tener un detalle con nosotros, os dejamos nuestra cuenta:",
+  "iban": "ES00 0000 0000 0000 0000 0000",
+  "rsvpBy": "1 de agosto de 2029",
+  "rsvpEndpoint": "",
+  "faq": [
+    {
+      "q": "¿Puedo llevar acompañante?",
+      "a": "Sí, indícalo en el formulario de confirmación."
+    },
+    {
+      "q": "¿Pueden venir niños?",
+      "a": "Los peques son bienvenidos. Dinos cuántos vienen para prepararles su menú."
+    },
+    {
+      "q": "¿Habrá autobús?",
+      "a": "Sí, saldrá desde el centro de la ciudad a las 17:15 y habrá vuelta al final de la fiesta."
+    }
+  ],
+  "theme": {
+    "--seal": "#b8847c",
+    "--paper": "#efe6d8",
+    "--bg": "#f7f2ea",
+    "--ink": "#5b4a40",
+    "--accent": "#9aab8c",
+    "--accent-2": "#c9a7a0",
+    "--gold": "#b8975a",
+    "--flower-1": "#f1d9cf",
+    "--flower-2": "#a9bcd3",
+    "--flower-3": "#e8c6c0",
+    "--leaf": "#a8b394",
+    "--hero-text": "#4a382e",
+    "--seal-dark": "#995d53",
+    "--seal-light": "#d1afaa"
+  }
 };/*CONFIG_END*/
 
 /* ---------- modo vista previa (lo usa el panel) ---------- */
