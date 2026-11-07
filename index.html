@@ -117,6 +117,13 @@ main.on{opacity:1}
 .hero-scene{position:absolute;inset:0}
 .hero-scene svg{width:100%;height:100%}
 .hero-veil{position:absolute;inset:0;background:radial-gradient(60% 40% at 50% 48%,rgba(255,246,232,.55),transparent 70%)}
+/* con foto o vídeo de fondo: texto arriba, sobre el cielo, con un velo suave para que se lea */
+.hero.has-media{align-items:start;padding-top:calc(6.5vh + env(safe-area-inset-top))}
+.hero.has-media .hero-veil{background:linear-gradient(180deg,rgba(255,248,236,.62) 0%,rgba(255,248,236,.5) 26%,rgba(255,248,236,.18) 40%,transparent 50%,transparent 82%,rgba(60,45,35,.18) 100%)}
+.hero.has-media .names{font-size:clamp(44px,12.4vw,96px);line-height:.98}
+.hero.has-media .lede{margin-top:0}
+.hero.has-media .date{margin-top:6px}
+.hero.has-media .date::before{display:none}
 .hero-content{position:relative;z-index:2}
 .hero .names{font-family:var(--script);font-weight:400;font-size:clamp(54px,15vw,120px);line-height:1.02;text-shadow:0 0 18px rgba(255,246,232,.9),0 0 40px rgba(255,246,232,.6)}
 .hero .amp{display:block;font-size:.55em;margin:.05em 0}
@@ -638,7 +645,7 @@ html.preview::-webkit-scrollbar{display:none}
 /*CONFIG_START*/let CONFIG = {
   initials: "S&A",
   fonts: { script: "Pinyon Script", serif: "Cormorant Garamond" },
-  heroImage: "",
+  heroImage: "media/portada.jpg",
   introImage: "media/sobre-cerrado.jpg",   // foto del sobre cerrado (primer fotograma del vídeo)
   introVideo: "media/apertura-sobre.mp4",   // vídeo de apertura del sobre (9:16); si existe, sustituye a la animación dibujada
   sections: { invite:true, countdown:true, venues:true, schedule:true, dress:true, gifts:true, faq:true, rsvp:true },
@@ -648,7 +655,7 @@ html.preview::-webkit-scrollbar{display:none}
   date: "2027-09-11T18:00:00",
   dateLong: "11 · septiembre · 2027",
   inviteText: "a celebrar con nosotros el día más especial de nuestras vidas. Será un día inolvidable, y no sería lo mismo sin ti.",
-  heroVideo: "",   // URL de un .mp4 (p. ej. generado en Higgsfield) para la portada
+  heroVideo: "media/portada.mp4",   // URL de un .mp4 (p. ej. generado en Higgsfield) para la portada
   music: "",       // URL de un .mp3; si está vacío no se muestra el botón
   venues: [
     { label:"Ceremonia", time:"18:00", name:"Iglesia de Santa María", address:"Plaza Mayor 1, Ciudad", maps:"https://maps.google.com/?q=Plaza+Mayor+1" },
@@ -738,8 +745,9 @@ function render(){
   const key = (CONFIG.heroVideo||'') + '|' + (CONFIG.heroImage||'');
   if (key !== heroKey){
     heroKey = key;
-    $('#heroBg').innerHTML = CONFIG.heroVideo ? `<video src="${esc(CONFIG.heroVideo)}" autoplay muted loop playsinline></video>`
+    $('#heroBg').innerHTML = CONFIG.heroVideo ? `<video src="${esc(CONFIG.heroVideo)}" ${CONFIG.heroImage ? `poster="${esc(CONFIG.heroImage)}"` : ''} autoplay muted loop playsinline preload="auto"></video>`
       : CONFIG.heroImage ? `<img src="${esc(CONFIG.heroImage)}" alt="">` : DEFAULT_HERO;
+    document.querySelector('.hero').classList.toggle('has-media', !!(CONFIG.heroVideo || CONFIG.heroImage));
   }
   const ikey = (CONFIG.introVideo||'') + '|' + (CONFIG.introImage||'');
   if (ikey !== introKey){
