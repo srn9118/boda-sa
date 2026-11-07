@@ -96,6 +96,13 @@ img{display:block;max-width:100%}
 @keyframes pulse{0%{transform:scale(.9);opacity:.8}100%{transform:scale(1.35);opacity:0}}
 
 .whiteout{position:fixed;inset:0;z-index:60;background:#fffaf0;opacity:0;pointer-events:none}
+/* apertura en vídeo (p. ej. generada con Higgsfield): tapa el sobre dibujado */
+.intro{position:absolute;inset:0;z-index:8;background:var(--paper)}
+.intro[hidden]{display:none}
+.intro video,.intro img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.intro img{transition:opacity .25s}
+.intro.playing img{opacity:0}
+.envelope.has-intro .hint{z-index:9;color:var(--ink);text-shadow:0 0 12px rgba(255,251,242,.95),0 0 4px rgba(255,251,242,.9)}
 
 /* ============== INVITACIÓN ============== */
 main{position:relative;z-index:1;opacity:0}
@@ -447,6 +454,7 @@ html.preview::-webkit-scrollbar{display:none}
   </div>
   </div><!-- /flap-group -->
 
+  <div class="intro" id="intro" hidden></div>
   <div class="hint" id="hint"><span>Toca el sello para abrir</span></div>
 </div>
 <div class="whiteout" id="whiteout"></div>
@@ -631,6 +639,8 @@ html.preview::-webkit-scrollbar{display:none}
   initials: "S&A",
   fonts: { script: "Pinyon Script", serif: "Cormorant Garamond" },
   heroImage: "",
+  introImage: "media/sobre-cerrado.jpg",   // foto del sobre cerrado (primer fotograma del vídeo)
+  introVideo: "media/apertura-sobre.mp4",   // vídeo de apertura del sobre (9:16); si existe, sustituye a la animación dibujada
   sections: { invite:true, countdown:true, venues:true, schedule:true, dress:true, gifts:true, faq:true, rsvp:true },
   name1: "Sofía",
   name2: "Alejandro",
@@ -678,7 +688,7 @@ if (PREVIEW){
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const DEFAULT_HERO = document.querySelector('#heroBg').innerHTML;
-let heroKey = '';
+let heroKey = '', introKey = '';
 const loadedFonts = new Set(['Pinyon Script','Cormorant Garamond']);
 function loadFont(name){
   if (!name || loadedFonts.has(name)) return; loadedFonts.add(name);
@@ -731,6 +741,16 @@ function render(){
     $('#heroBg').innerHTML = CONFIG.heroVideo ? `<video src="${esc(CONFIG.heroVideo)}" autoplay muted loop playsinline></video>`
       : CONFIG.heroImage ? `<img src="${esc(CONFIG.heroImage)}" alt="">` : DEFAULT_HERO;
   }
+  const ikey = (CONFIG.introVideo||'') + '|' + (CONFIG.introImage||'');
+  if (ikey !== introKey){
+    introKey = ikey;
+    const box = $('#intro');
+    box.hidden = !CONFIG.introVideo;
+    $('#envelope').classList.toggle('has-intro', !!CONFIG.introVideo);
+    box.innerHTML = CONFIG.introVideo
+      ? `<video src="${esc(CONFIG.introVideo)}" muted playsinline preload="auto"></video>${CONFIG.introImage ? `<img src="${esc(CONFIG.introImage)}" alt="">` : ''}`
+      : '';
+  }
   const audioEl = $('#audio');
   if (CONFIG.music){ if (audioEl.getAttribute('src') !== CONFIG.music) audioEl.src = CONFIG.music; $('#music').hidden = false; }
   else { audioEl.pause(); audioEl.removeAttribute('src'); $('#music').hidden = true; }
@@ -768,6 +788,8 @@ function openEnvelope(){
   seal.querySelector('.seal-pulse')?.remove();
   if (CONFIG.music) toggleMusic(true);
   if (reduce){ finish(); return; }
+  const vid = $('#intro video');
+  if (vid){ playIntro(vid); return; }
 
   /* Secuencia calcada de la referencia (t = ms desde el toque):
      0–300     el lacre cede un poco al tocarlo
@@ -799,16 +821,30 @@ function openEnvelope(){
   plight.animate([{opacity:0},{opacity:.6,offset:.5},{opacity:1}], {duration:1900, delay:T+800, easing:'ease-in', fill:'forwards'});
   env.animate([{filter:'brightness(1)'},{filter:'brightness(1.08)'}], {duration:1200, delay:T+2000, fill:'forwards'});
   // cuando la luz satura la imagen, se funde con la portada
-  white.animate([{opacity:0},{opacity:.88}], {duration:600, delay:T+2500, easing:'ease-in', fill:'forwards'}).onfinish = ()=>{
-    // la invitación ya está debajo: fundido directo del sobre a la portada
-    document.body.classList.remove('locked');
-    main.classList.add('on');
-    window.scrollTo(0,0);
-    env.classList.add('gone');
-    const fade = {duration:1100, easing:'ease-out', fill:'forwards'};
-    env.animate([{opacity:1},{opacity:0}], fade).onfinish = () => { env.style.display='none'; };
-    white.animate([{opacity:.88},{opacity:0}], {...fade, duration:1300});
-  };
+  white.animate([{opacity:0},{opacity:.88}], {duration:600, delay:T+2500, easing:'ease-in', fill:'forwards'}).onfinish = () => reveal(.88);
+}
+// fundido directo del sobre (o del vídeo) a la portada, que ya está debajo
+let revealed = false;
+function reveal(whiteFrom){
+  if (revealed) return; revealed = true;
+  document.body.classList.remove('locked');
+  main.classList.add('on');
+  window.scrollTo(0,0);
+  env.classList.add('gone');
+  const fade = {duration:1100, easing:'ease-out', fill:'forwards'};
+  env.animate([{opacity:1},{opacity:0}], fade).onfinish = () => { env.style.display='none'; };
+  if (whiteFrom) white.animate([{opacity:whiteFrom},{opacity:0}], {...fade, duration:1300});
+}
+// apertura con vídeo: se reproduce y, poco antes de acabar, se funde con la portada
+function playIntro(v){
+  $('#intro').classList.add('playing');
+  const done = () => reveal(0);
+  v.addEventListener('timeupdate', () => { if (v.duration && v.duration - v.currentTime < .3) done(); });
+  v.addEventListener('ended', done);
+  v.addEventListener('error', done);
+  v.play().catch(done);
+  // por si el vídeo se queda colgado en una mala conexión
+  setTimeout(done, ((isFinite(v.duration) && v.duration) ? v.duration * 1000 : 8000) + 2500);
 }
 function finish(){
   env.style.display='none'; env.classList.add('gone');
